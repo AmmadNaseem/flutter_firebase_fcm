@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "191970956807",
+    "project_id": "flutter-firebase-fcm-5a360",
+    "storage_bucket": "flutter-firebase-fcm-5a360.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:191970956807:android:c52f9deebb47bfa902fca2",
+        "android_client_info": {
+          "package_name": "com.codesoluit.flutterfirebasefcm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCR-MrW9kGFiv4FXYiSfxIkyzIuyNbCqkc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
