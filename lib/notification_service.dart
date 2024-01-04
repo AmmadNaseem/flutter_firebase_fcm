@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:math';
-
 import 'package:app_settings/app_settings.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase_fcm/message_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
@@ -48,7 +48,7 @@ class NotificationService {
 
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse: (payload) {
-      if (kDebugMode) print('::: payload $payload');
+      handleMessage(context, message);
     });
   }
 
@@ -61,14 +61,19 @@ class NotificationService {
         print("notifications body:${notification.body}");
         print('count:${android!.count}');
         print('data:${message.data.toString()}');
-      }
-      if (Platform.isIOS) {
-        foregroundMessage();
+        print(message.data['type']);
+        print(message.data['id']);
+        // print(message.data['title']);
+        // print(message.data['body']);
       }
 
       if (Platform.isAndroid) {
         initLocalNotifications(context, message);
         showNotification(message);
+      }
+
+      if (Platform.isIOS) {
+        foregroundMessage();
       }
     });
   }
@@ -85,7 +90,7 @@ class NotificationService {
     AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
             channel.id.toString(), channel.name.toString(),
-            channelDescription: 'channel Description',
+            channelDescription: 'Your channel Description',
             importance: Importance.high,
             priority: Priority.high,
             playSound: true,
@@ -121,6 +126,43 @@ class NotificationService {
         print('Refreshed token: $event');
       }
     });
+  }
+
+  //----------HANDLE TAP ON NOTIFICATION WHEN APP IS IN BACKGROUND OR TERMINATED
+  Future<void> setupInteractMessage(BuildContext context) async {
+    //-------WHEN APP IS TERMINATED-------------
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      // ignore: use_build_context_synchronously
+      handleMessage(context, initialMessage);
+    }
+
+    //------WHEN APP IS IN BACKGROUND
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      handleMessage(context, event);
+    });
+  }
+
+  void handleMessage(BuildContext context, RemoteMessage message) {
+    if (kDebugMode) {
+      print(':::data of handling notification  ${message.data['type']}');
+      print('should navigate now ');
+    }
+
+    if (message.data['type'] == 'msg') {
+      if (kDebugMode) {
+        print('navigating ');
+      }
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MessageScreen(
+                    id: message.data['id'],
+                  )));
+    }
   }
 
   Future<void> showSimpleNotification({

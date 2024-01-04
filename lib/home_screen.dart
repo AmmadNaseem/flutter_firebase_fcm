@@ -15,9 +15,10 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     notificationService.requestNotificationPermission();
     notificationService.firebaseInit(context);
+    notificationService.setupInteractMessage(context);
     notificationService.isTokenRefresh();
     notificationService.getDeviceToken().then((value) {
-      print('Device Token: ');
+      print('=========Device Token: ');
       print(value);
     });
   }
@@ -26,7 +27,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: NotificationButton(),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          NotificationButton(),
+          TextButton(
+            onPressed: () {},
+            child: const Text('Send Notification'),
+          ),
+        ]),
       ),
     );
   }
