@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:app_settings/app_settings.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -119,6 +120,21 @@ class NotificationService {
     return token!;
   }
 
+  Future<dynamic> getDeviceInfo() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    dynamic userDeviceInfo = {};
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      userDeviceInfo['device_id'] = androidInfo.id;
+      userDeviceInfo['device_type'] = 'android';
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      userDeviceInfo['device_id'] = iosInfo.identifierForVendor;
+      userDeviceInfo['device_type'] = 'ios';
+    }
+    return userDeviceInfo;
+  }
+
   void isTokenRefresh() async {
     messaging.onTokenRefresh.listen((event) {
       event.toString();
@@ -182,6 +198,7 @@ class NotificationService {
         .show(0, title, body, notificationDetails, payload: payload);
   }
 
+  //------tHIS CONTROLS WHEN OUR APP ACTIVATE IN IOS=========
   Future foregroundMessage() async {
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
